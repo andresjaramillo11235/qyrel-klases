@@ -1,0 +1,13 @@
+vendor/
+/config/DatabaseConfig.php
+ceacloud.lat.code-workspace
+/crons/cron_output.txt
+/crons/log_clases.txt
+/files/
+crons/cron_output.txt
+crons/log_clases.txt
+.gitignore.save
+logs/
+ceacloud.txt
+config/Settings.php
+

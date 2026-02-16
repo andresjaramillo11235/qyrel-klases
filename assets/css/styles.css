@@ -1,0 +1,5 @@
+.estudiante-foto {
+    width: 100%; /* Asegura que la imagen tome el ancho completo del contenedor */
+    height: 200px; /* Ajusta la altura según sea necesario */
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionarse */
+}
