@@ -15,22 +15,6 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
     </a>
 </li>
 
-<?php
-/** 
- * Bot IA 
- */
-?>
-<?php if ($botIa && !empty($botIa['url'])): ?>
-    <li class="pc-item">
-        <a href="<?= htmlspecialchars($botIa['url']) ?>" class="pc-link" target="_blank" rel="noopener noreferrer">
-            <span class="pc-micon">
-                <i class="ph-duotone ph-robot"></i>
-            </span>
-            <span class="pc-mtext">Bot IA</span>
-        </a>
-    </li>
-<?php endif; ?>
-
 <?php /** MATRICULAS */ ?>
 <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
@@ -53,13 +37,13 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
         <span class="pc-micon">
             <i class="ph-duotone ph-student"></i>
         </span>
-        <span class="pc-mtext">Estudiantes</span>
+        <span class="pc-mtext"><?= LabelHelper::get('menu_estudiantes') ?></span>
         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
     </a>
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="/estudiantes/">Listado</a></li>
-        <li class="pc-item"><a class="pc-link" href="/estudiantescreate/">Crear</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['clientes_nuevos_index']; ?>">Clientes Nuevos</a></li>
+        <li class="pc-item"><a class="pc-link" href="/estudiantescreate/">Nuevo</a></li>
+        <!-- <li class="pc-item"><a class="pc-link" href="<?= $routes['clientes_nuevos_index']; ?>">Clientes Nuevos</a></li> -->
     </ul>
 </li>
 

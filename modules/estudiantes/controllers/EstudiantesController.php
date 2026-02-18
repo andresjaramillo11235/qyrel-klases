@@ -4,6 +4,8 @@ require_once '../config/DatabaseConfig.php';
 require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../shared/utils/UserUtils.php';
 require_once '../modules/mail/MailController.php';
+require_once '../shared/utils/LabelHelper.php';
+
 
 class EstudiantesController
 {
@@ -22,6 +24,7 @@ class EstudiantesController
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
         $permissionController = new PermissionController();
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
         if (!$permissionController->hasPermission($currentUserId, 'view_students')) {
             header('Location: /permission-denied/');
@@ -74,6 +77,7 @@ class EstudiantesController
     {
         $currentUserId = $_SESSION['user_id'];
         $permissionController = new PermissionController();
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
         if (!$permissionController->hasPermission($currentUserId, 'create_students')) {
             header('Location: /permission-denied/');
@@ -109,7 +113,7 @@ class EstudiantesController
         $numero_documento = $_POST['numero_documento'];
 
         // Manejo de la subida de la foto
-        $foto = "img-defecto-estudiante.webp"; // Valor por defecto
+        $foto = "img-defecto-estudiante.png"; // Valor por defecto
 
         if (!empty($_FILES['foto']['name'])) {
             $file = $_FILES['foto'];
@@ -212,30 +216,30 @@ class EstudiantesController
         $apellidos = $_POST['apellidos'];
         $tipo_documento = $_POST['tipo_documento'];
         $numero_documento = $_POST['numero_documento'];
-        $expedicion_departamento = $_POST['expedicion_departamento'];
-        $expedicion_ciudad = $_POST['expedicion_ciudad'];
-        $fecha_expedicion = $_POST['fecha_expedicion'];
+        $expedicion_departamento = $_POST['expedicion_departamento'] ?? null;
+        $expedicion_ciudad = $_POST['expedicion_ciudad'] ?? null;
+        $fecha_expedicion = $_POST['fecha_expedicion'] ?? null;
         $grupo_sanguineo = $_POST['grupo_sanguineo'];
         $genero = $_POST['genero'];
         $fecha_nacimiento = $_POST['fecha_nacimiento'];
         $correo = strtolower($_POST['correo']);
         $celular = $_POST['celular'];
-        $direccion_residencia = $_POST['direccion_residencia'];
-        $direccion_oficina = $_POST['direccion_oficina'];
-        $telefono_oficina = $_POST['telefono_oficina'];
-        $estado_civil = $_POST['estado_civil'];
-        $ocupacion = $_POST['ocupacion'];
-        $jornada = $_POST['jornada'];
-        $barrio = $_POST['barrio'];
-        $estrato = $_POST['estrato'];
-        $seguridad_social = $_POST['seguridad_social'];
-        $nivel_educacion = $_POST['nivel_educacion'];
-        $ciudad_origen = $_POST['ciudad_origen'];
-        $discapacidad = $_POST['discapacidad'];
-        $nombre_contacto = $_POST['nombre_contacto'];
-        $telefono_contacto = $_POST['telefono_contacto'];
-        $observaciones = $_POST['observaciones'];
-        $estado = isset($_POST['estado']) ? 1 : 0;
+        $direccion_residencia = $_POST['direccion_residencia'] ?? null;
+        $direccion_oficina = $_POST['direccion_oficina'] ?? null;
+        $telefono_oficina = $_POST['telefono_oficina'] ?? null;
+        $estado_civil = $_POST['estado_civil'] ?? null;
+        $ocupacion = $_POST['ocupacion'] ?? null;
+        $jornada = $_POST['jornada'] ?? null;
+        $barrio = $_POST['barrio'] ?? null;
+        $estrato = $_POST['estrato'] ?? null;
+        $seguridad_social = $_POST['seguridad_social'] ?? null;
+        $nivel_educacion = $_POST['nivel_educacion'] ?? null;
+        $ciudad_origen = $_POST['ciudad_origen'] ?? null;
+        $discapacidad = $_POST['discapacidad'] ?? null;
+        $nombre_contacto = $_POST['nombre_contacto'] ?? null;
+        $telefono_contacto = $_POST['telefono_contacto'] ?? null;
+        $observaciones = $_POST['observaciones'] ?? null;
+        $estado = 1; // Activo por defecto
         $empresa_id = $_SESSION['empresa_id'];
 
         $stmt = $this->conn->prepare($query);
@@ -281,11 +285,10 @@ class EstudiantesController
             $role_id = 5; // EST estudiante
 
             ## Generar nombre de usuario
-            // $iniciales = $this->obtenerIniciales($nombres, $apellidos);
             $usernameBase = $numero_documento;
             $username = $usernameBase;
 
-            // Verificar si el nombre de usuario ya existe y generar uno único
+            ## Verificar si el nombre de usuario ya existe y generar uno único
             $query = "SELECT COUNT(*) FROM users WHERE username = :username";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':username', $username);
@@ -968,7 +971,7 @@ class EstudiantesController
     }
 
     public function buscar()
-    { 
+    {
         // ----------------------------------------------------------
         // 🔹 Contexto
         // ----------------------------------------------------------

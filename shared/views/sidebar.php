@@ -31,7 +31,7 @@
                 <!-- Mostrar la imagen -->
                 <img src="<?= $path ?>" alt="logo image" class="logo-lg" width="<?= $newWidth ?>" height="<?= $newHeight ?>" />
 
-                <span class="badge bg-brand-color-2 rounded-pill ms-2 theme-version">v0.9.2145</span>
+                <span class="badge bg-brand-color-2 rounded-pill ms-2 theme-version">v0.9.25</span>
             </a>
         </div>
         <div class="navbar-content">

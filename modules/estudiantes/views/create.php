@@ -4,27 +4,33 @@
     </div>
 <?php endif; ?>
 
+<?php /** [ breadcrumb ] start */  ?>
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
             <div class="col-md-12">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/estudiantes/">Estudiantes</a></li>
-                    <li class="breadcrumb-item" aria-current="page">Nuevo estudiante</li>
+                    <li class="breadcrumb-item"><a href="/home/"><i class="ti ti-home"></i> Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="/estudiantes/"><?= LabelHelper::get('menu_estudiantes') ?></a></li>
+                    <li class="breadcrumb-item" aria-current="page">Nuevo</li>
                 </ul>
+            </div>
+            <div class="col-md-12">
+                <div class="page-header-title">
+                    <h2 class="mb-0"><?= LabelHelper::get('menu_estudiantes') ?></h2>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<?php /** [ breadcrumb ] end */  ?>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card">
 
             <div class="card-header">
-                <h5>Datos del nuevo estudiante: los campos con
-                    <i class="ph-duotone ph-asterisk"></i> son obligatorios.
+                <h5>Los campos con <i class="ph-duotone ph-asterisk"></i> son obligatorios.
                 </h5>
             </div>
 
@@ -35,31 +41,8 @@
 
 
                 <form id="formAgregarEstudiante" method="post" action="/estudiantesstore/" enctype="multipart/form-data" class="validate-me" data-validate>
+
                     <div class="row">
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="numero_documento" class="form-label">Número de Documento <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="<?= htmlspecialchars($form_data['numero_documento'] ?? '') ?>" required>
-                                <div id="documento-feedback" class="invalid-feedback">El número de documento ya está en uso.</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="apellidos" class="form-label">Apellidos <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="text" class="form-control text-uppercase" id="apellidos" name="apellidos" value="<?= htmlspecialchars($form_data['apellidos'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese los apellidos.</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="nombres" class="form-label">Nombres <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="text" class="form-control text-uppercase" id="nombres" name="nombres" value="<?= htmlspecialchars($form_data['nombres'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese los nombres.</div>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -73,27 +56,39 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="expedicion_departamento" class="form-label">Departamento de Expedición <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="text" class="form-control text-uppercase" id="expedicion_departamento" name="expedicion_departamento" value="<?= htmlspecialchars($form_data['expedicion_departamento'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese el departamento de expedición.</div>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="expedicion_ciudad" class="form-label">Ciudad de Expedición <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="text" class="form-control text-uppercase" id="expedicion_ciudad" name="expedicion_ciudad" value="<?= htmlspecialchars($form_data['expedicion_ciudad'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese la ciudad de expedición.</div>
+                                <label for="numero_documento" class="form-label">Número de Documento <i class="ph-duotone ph-asterisk"></i></label>
+                                <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="<?= htmlspecialchars($form_data['numero_documento'] ?? '') ?>" required>
+                                <div id="documento-feedback" class="invalid-feedback">El número de documento ya está en uso.</div>
                             </div>
                         </div>
 
+
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="fecha_expedicion" class="form-label">Fecha de Expedición <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="date" class="form-control" id="fecha_expedicion" name="fecha_expedicion" value="<?= htmlspecialchars($form_data['fecha_expedicion'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese la fecha de expedición.</div>
+                                <label for="nombres" class="form-label">Nombres <i class="ph-duotone ph-asterisk"></i></label>
+                                <input type="text" class="form-control text-uppercase" id="nombres" name="nombres" value="<?= htmlspecialchars($form_data['nombres'] ?? '') ?>" required>
+                                <div class="invalid-feedback">Por favor, ingrese los nombres.</div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="apellidos" class="form-label">Apellidos <i class="ph-duotone ph-asterisk"></i></label>
+                                <input type="text" class="form-control text-uppercase" id="apellidos" name="apellidos" value="<?= htmlspecialchars($form_data['apellidos'] ?? '') ?>" required>
+                                <div class="invalid-feedback">Por favor, ingrese los apellidos.</div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <i class="ph-duotone ph-asterisk"></i></label>
+                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($form_data['fecha_nacimiento'] ?? '') ?>" required>
+                                <div class="invalid-feedback">Por favor, ingrese la fecha de nacimiento.</div>
                             </div>
                         </div>
 
@@ -121,13 +116,6 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?= htmlspecialchars($form_data['fecha_nacimiento'] ?? '') ?>" required>
-                                <div class="invalid-feedback">Por favor, ingrese la fecha de nacimiento.</div>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -142,128 +130,6 @@
                                 <label for="celular" class="form-label">Celular <i class="ph-duotone ph-asterisk"></i></label>
                                 <input type="number" class="form-control" id="celular" name="celular" value="<?= htmlspecialchars($form_data['celular'] ?? '') ?>" minlength="10" maxlength="10" required>
                                 <div class="invalid-feedback">Por favor, ingrese un número de celular de 10 dígitos.</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="estado" name="estado" checked>
-                                    <label class="form-check-label" id="estado-label" for="estado">Activo</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="direccion_residencia" class="form-label">Dirección de Residencia</label>
-                                <input type="text" class="form-control text-uppercase" id="direccion_residencia" name="direccion_residencia" value="<?= htmlspecialchars($form_data['direccion_residencia'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="barrio" class="form-label">Barrio</label>
-                                <input type="text" class="form-control text-uppercase" id="barrio" name="barrio" value="<?= htmlspecialchars($form_data['barrio'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="direccion_oficina" class="form-label">Dirección de Oficina</label>
-                                <input type="text" class="form-control text-uppercase" id="direccion_oficina" name="direccion_oficina" value="<?= htmlspecialchars($form_data['direccion_oficina'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="telefono_oficina" class="form-label">Teléfono de Oficina</label>
-                                <input type="text" class="form-control" id="telefono_oficina" name="telefono_oficina" value="<?= htmlspecialchars($form_data['telefono_oficina'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estado_civil" class="form-label">Estado Civil</label>
-                                <select class="form-control" id="estado_civil" name="estado_civil">
-                                    <?php foreach ($parametricTables['estado_civil'] as $estado_civil) : ?>
-                                        <option value="<?php echo $estado_civil['id']; ?>" <?= isset($form_data['estado_civil']) && $form_data['estado_civil'] == $estado_civil['id'] ? 'selected' : '' ?>><?php echo $estado_civil['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="ocupacion" class="form-label">Ocupación</label>
-                                <select class="form-control" id="ocupacion" name="ocupacion">
-                                    <?php foreach ($parametricTables['ocupacion'] as $ocupacion) : ?>
-                                        <option value="<?php echo $ocupacion['id']; ?>" <?= isset($form_data['ocupacion']) && $form_data['ocupacion'] == $ocupacion['id'] ? 'selected' : '' ?>><?php echo $ocupacion['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="jornada" class="form-label">Jornada</label>
-                                <select class="form-control" id="jornada" name="jornada">
-                                    <?php foreach ($parametricTables['jornada'] as $jornada) : ?>
-                                        <option value="<?php echo $jornada['id']; ?>" <?= isset($form_data['jornada']) && $form_data['jornada'] == $jornada['id'] ? 'selected' : '' ?>><?php echo $jornada['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estrato" class="form-label">Estrato</label>
-                                <select class="form-control" id="estrato" name="estrato">
-                                    <?php foreach ($parametricTables['estrato'] as $estrato) : ?>
-                                        <option value="<?php echo $estrato['id']; ?>" <?= isset($form_data['estrato']) && $form_data['estrato'] == $estrato['id'] ? 'selected' : '' ?>><?php echo $estrato['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="seguridad_social" class="form-label">Seguridad Social</label>
-                                <select class="form-control" id="seguridad_social" name="seguridad_social">
-                                    <?php foreach ($parametricTables['seguridad_social'] as $seguridad_social) : ?>
-                                        <option value="<?php echo $seguridad_social['id']; ?>" <?= isset($form_data['seguridad_social']) && $form_data['seguridad_social'] == $seguridad_social['id'] ? 'selected' : '' ?>><?php echo $seguridad_social['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="nivel_educacion" class="form-label">Nivel de Educación</label>
-                                <select class="form-control" id="nivel_educacion" name="nivel_educacion">
-                                    <?php foreach ($parametricTables['nivel_educacion'] as $nivel_educacion) : ?>
-                                        <option value="<?php echo $nivel_educacion['id']; ?>" <?= isset($form_data['nivel_educacion']) && $form_data['nivel_educacion'] == $nivel_educacion['id'] ? 'selected' : '' ?>><?php echo $nivel_educacion['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="ciudad_origen" class="form-label">Ciudad de Origen</label>
-                                <input type="text" class="form-control  text-uppercase" id="ciudad_origen" name="ciudad_origen" value="<?= htmlspecialchars($form_data['ciudad_origen'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="discapacidad" class="form-label">Discapacidad</label>
-                                <select class="form-control" id="discapacidad" name="discapacidad">
-                                    <?php foreach ($parametricTables['discapacidad'] as $discapacidad) : ?>
-                                        <option value="<?php echo $discapacidad['id']; ?>" <?= isset($form_data['discapacidad']) && $form_data['discapacidad'] == $discapacidad['id'] ? 'selected' : '' ?>><?php echo $discapacidad['nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
                             </div>
                         </div>
 
@@ -313,9 +179,8 @@
                     <div class="col-md-12 text-end">
                         <button type="submit" id="submit_button" class="btn btn-primary">Enviar</button>
                     </div>
+
                 </form>
-
-
 
             </div>
         </div>
@@ -325,69 +190,6 @@
 <script src="../assets/js/plugins/bouncer.min.js"></script>
 <script src="../assets/js/pages/form-validation.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
-
-<script>
-    /*    
-    const input = document.getElementById('scannerInput');
-    let scanTimeout;
-
-    input.addEventListener('keydown', function (e) {
-        if (e.key === 'Tab') {
-            e.preventDefault(); // no dejar que cambie el foco
-            input.value += '\t'; // añadir tabulación manualmente
-        }
-    });
-
-    input.addEventListener('input', function () {
-        clearTimeout(scanTimeout);
-
-        // Esperamos que el escaneo termine
-        scanTimeout = setTimeout(() => {
-            const raw = input.value.trim();
-            console.log('Texto escaneado crudo:', raw);
-
-            const datos = raw.split('\t'); // ahora sí puede separarse por tab
-            console.log('Datos escaneados:', datos);
-
-            if (datos.length >= 6) {
-                const numeroDocumento = datos[0].trim();    
-                const apellido1 = datos[1].trim();          
-                const apellido2 = datos[2].trim();          
-                const nombres = datos[3].trim();            
-                const sexo = datos[4].trim();               
-                const fechaRaw = datos[5].trim();           
-
-                const fechaNacimiento = `${fechaRaw.slice(4)}-${fechaRaw.slice(2, 4)}-${fechaRaw.slice(0, 2)}`;
-
-                document.getElementById('numero_documento').value = numeroDocumento;
-                document.getElementById('apellidos').value = `${apellido1} ${apellido2}`;
-                document.getElementById('nombres').value = nombres;
-                document.getElementById('fecha_nacimiento').value = fechaNacimiento;
-
-                const generoSelect = document.getElementById('genero');
-                const generoTexto = sexo === 'M' ? 'MASCULINO' : 'FEMENINO';
-                for (let option of generoSelect.options) {
-                    if (option.text.toUpperCase().includes(generoTexto)) {
-                        option.selected = true;
-                        break;
-                    }
-                }
-            }
-
-            input.value = ''; // limpiar para siguiente escaneo
-        }, 200); // espera para que escáner termine
-    });
-
-    window.addEventListener('load', () => input.focus());
-    document.addEventListener('click', () => input.focus());
-    */
-</script>
-
-
-
-
-
 
 <script>
     // Bootstrap validation
