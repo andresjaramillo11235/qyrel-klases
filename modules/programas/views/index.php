@@ -29,6 +29,8 @@
     ?>
 <?php endif; ?>
 
+
+
 <?php if (isset($_SESSION['success_message'])) : ?>
     <script>
         const successMessage = <?php echo json_encode($_SESSION['success_message']); ?>;
@@ -87,17 +89,12 @@
 
             <div class="card-body">
                 <div class="table-responsive">
+
                     <table class="table table-hover data-table" id="pc-dt-simple">
                         <thead class="bg-light">
                             <tr>
                                 <th>Nombre</th>
                                 <th>Descripción</th>
-                                <th>Categoría</th>
-                                <th>Horas<br>Prácticas</th>
-                                <th>Horas<br>Teóricas</th>
-                                <th>Tipo<br>vehículo</th>
-                                <th>Servicio</th>
-                                <th>Estado</th>
                                 <th>Temas</th>
                                 <th>Acciones</th>
                             </tr>
@@ -107,34 +104,19 @@
                                 <tr>
                                     <td><?= insertarSaltosDeLinea(htmlspecialchars(strtoupper($programa['nombre'])), 3) ?></td>
                                     <td><?= insertarSaltosDeLinea(strtoupper($programa['descripcion']), 4) ?></td>
-                                    <td><?= htmlspecialchars($programa['categoria_nombre']) ?></td>
-                                    <td><?= $programa['horas_practicas'] ?></td>
-                                    <td><?= $programa['horas_teoricas'] ?></td>
-                                    <td><?= $programa['vehiculo_nombre'] ?></td>
-                                    <td><?= strtoupper($programa['tipo_servicio']) ?></td>
                                     <td>
-                                        <span class="badge <?= $programa['estado'] == 1 ? 'bg-success' : 'bg-secondary' ?>">
-                                            <?= $programa['estado'] == 1 ? 'ACTIVO' : 'INACTIVO' ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="<?= $routes['programas_temas_index'] ?><?= $programa['id'] ?>" class="btn btn-info btn-sm">
-                                            <i class="ti ti-car"></i> Clases Práctica
-                                        </a>
-
                                         <a href="<?= $routes['clases_teoricas_temas_index'] ?><?= $programa['id'] ?>" class="btn btn-warning btn-sm">
                                             <i class="ti ti-school"></i> Temas Teoría
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="<?= $routes['programas_edit'] ?><?= $programa['id'] ?>" class="btn btn-info btn-sm" title="Editar">
-                                            <i class="ti ti-edit"></i>
+                                        <a href="<?= $routes['programas_edit'] ?><?= $programa['id'] ?>" class="avtar avtar-xs btn-link-secondary" title="Modificar Programa">
+                                            <i class="ti ti-edit f-20"></i>
                                         </a>
 
-                                        <button class="btn btn-danger btn-sm btn-eliminar" title="Eliminar" data-id="<?= $programa['id'] ?>">
-                                            <i class="ti ti-trash"></i>
+                                        <button class="avtar avtar-xs btn-link-secondary" title="Eliminar Programa" data-id="<?= $programa['id'] ?>">
+                                            <i class="ti ti-trash f-20"></i>
                                         </button>
-
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -172,7 +154,5 @@
                 }
             });
         });
-
-
     });
 </script>

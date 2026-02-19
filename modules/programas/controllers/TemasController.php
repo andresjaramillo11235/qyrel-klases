@@ -1,6 +1,7 @@
 <?php
 
 require_once '../config/DatabaseConfig.php';
+require_once '../shared/utils/LabelHelper.php';
 
 class TemasController
 {

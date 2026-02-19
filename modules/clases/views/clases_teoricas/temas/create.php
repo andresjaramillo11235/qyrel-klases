@@ -22,7 +22,7 @@
         <div class="card">
             <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    Nuevo tema para clase teórica - Programa: <?php echo htmlspecialchars($programaNombre); ?>
+                    Nuevo Tema Programa: <?php echo htmlspecialchars($programaNombre); ?>
                     <br>
                     <small class="text-muted">Los campos con <i class="ph-duotone ph-asterisk"></i> son obligatorios.</small>
                 </h5>

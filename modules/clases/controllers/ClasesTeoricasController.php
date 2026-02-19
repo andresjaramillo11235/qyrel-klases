@@ -4,6 +4,7 @@ require_once '../config/DatabaseConfig.php';
 require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../shared/utils/UserUtils.php';
 require_once '../vendor/autoload.php';
+require_once '../shared/utils/LabelHelper.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -21,7 +22,6 @@ class ClasesTeoricasController
         $this->conn = $config->getConnection();
         $this->userUtils = new UserUtils();
     }
-
 
     public function index()
     {

@@ -8,30 +8,37 @@
 </style>
 
 
-<!-- [ breadcrumb ] start -->
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
             <div class="col-md-12">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="/instructores/">Instructores</a></li>
-                    <li class="breadcrumb-item" aria-current="page">Nuevo instructor</li>
+                    <li class="breadcrumb-item"><a href="/home/"><i class="ti ti-home"></i> Inicio</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="/instructores/"><?= LabelHelper::get('menu_instructores') ?></a></li>
                 </ul>
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                    <div class="page-header-title">
+                        <h2 class="mb-0">
+                            <?= LabelHelper::get('menu_instructores') ?>
+                        </h2>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<!-- [ breadcrumb ] end -->
 
 
-<!-- [ Main Content ] start -->
+
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
 
             <div class="card-header">
-                <h5>Datos del nuevo instructor: los campos con <i class="ph-duotone ph-asterisk"></i> son obligatorios.</h5>
+                <h5>Los campos con <i class="ph-duotone ph-asterisk"></i> son requeridos.</h5>
             </div>
 
             <div class="card-body">
@@ -75,49 +82,6 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="expedicion_departamento" class="form-label">Expedición Departamento <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-select" id="expedicion_departamento" name="expedicion_departamento" required>
-                                    <?php foreach ($paramDepartamentos as $departamento) : ?>
-                                        <option value="<?= $departamento['id_departamento'] ?>"><?= $departamento['departamento'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="expedicion_ciudad" class="form-label">
-                                    Expedición Ciudad <i class="ph-duotone ph-asterisk"></i>
-                                </label>
-                                <select class="form-select" id="expedicion_ciudad" name="expedicion_ciudad" required>
-                                    <option value="">Seleccione un municipio</option>
-                                </select>
-                            </div>
-                        </div>
-
-
-
-
-                        <!-- <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="expedicion_ciudad" class="form-label">Expedición Ciudad <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-select" id="expedicion_ciudad" name="expedicion_ciudad" required>
-                                    <?php foreach ($paramCiudades as $ciudad) : ?>
-                                        <option value="<?= $ciudad['id'] ?>"><?= $ciudad['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div> -->
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="fecha_expedicion" class="form-label">Fecha de Expedición <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="date" class="form-control" id="fecha_expedicion" name="fecha_expedicion" required>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -125,6 +89,7 @@
                                 <input type="email" class="form-control" id="email" name="correo" data-bouncer-message="Correo electrónico inválido." required>
                             </div>
                         </div>
+
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -134,12 +99,14 @@
                             </div>
                         </div>
 
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="direccion" class="form-label">Dirección <i class="ph-duotone ph-asterisk"></i></label>
                                 <input type="text" class="form-control" id="direccion" name="direccion" required>
                             </div>
                         </div>
+
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -163,63 +130,8 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estado_civil" class="form-label">Estado Civil</label>
-                                <select class="form-select" id="estado_civil" name="estado_civil">
-                                    <?php foreach ($paramEstadoCivil as $estado) : ?>
-                                        <option value="<?= $estado['id'] ?>"><?= $estado['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="vencimiento_licencia_conduccion" class="form-label">Vencimiento Licencia de Conducción <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="date" class="form-control" id="vencimiento_licencia_conduccion" name="vencimiento_licencia_conduccion" required>
-                            </div>
-                        </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="vencimiento_licencia_instructor" class="form-label">Vencimiento Licencia de Instructor <i class="ph-duotone ph-asterisk"></i></label>
-                                <input type="date" class="form-control" id="vencimiento_licencia_instructor" name="vencimiento_licencia_instructor" required>
-                            </div>
-                        </div>
-
-                        <!-- Campo Estado con Switch -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="estado" name="estado" checked>
-                                    <label class="form-check-label" id="estado-label" for="estado">Activo</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="categorias_conduccion" class="form-label">Categorías de Conducción <i class="ph-duotone ph-asterisk"></i></label>
-                                <select multiple class="form-select" id="categorias_conduccion" name="categorias_conduccion[]" required>
-                                    <?php foreach ($paramCategoriasConduccion as $categoria) : ?>
-                                        <option value="<?= $categoria['id'] ?>"><?= $categoria['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="categorias_instructor" class="form-label">Categorías de Instructor <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-select" id="categorias_instructor" name="categorias_instructor[]" multiple required>
-                                    <?php foreach ($categoriasInstructor as $categoria) : ?>
-                                        <option value="<?= $categoria['id'] ?>"><?= $categoria['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">

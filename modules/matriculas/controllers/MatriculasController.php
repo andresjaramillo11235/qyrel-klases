@@ -23,6 +23,7 @@ class MatriculasController
         $permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
         if (!$permissionController->hasPermission($currentUserId, 'view_matriculas')) {
             header('Location: /permission-denied/');
@@ -109,7 +110,8 @@ class MatriculasController
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
         $userUtils = new UserUtils();
-
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
+        
         if (!$permissionController->hasPermission($currentUserId, 'create_matriculas')) {
             header('Location: /permission-denied/');
             return;

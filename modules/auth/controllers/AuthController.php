@@ -155,7 +155,7 @@ class AuthController
 
     public function generarCaptcha()
     {
-        $captchaText = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz23456789"), 0, 6);
+        $captchaText = substr(str_shuffle("abcdefghijkmnopqrstuvwxyz23456789"), 0, 6);
         $_SESSION['captcha'] = $captchaText;
         $img = imagecreatetruecolor(120, 40);
         $bg = imagecolorallocate($img, 255, 255, 255);

@@ -19,6 +19,7 @@
     </div>
 <?php endif; ?>
 
+
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
@@ -32,13 +33,17 @@
         </div>
     </div>
 </div>
+
+
+
+
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-                <h5><i class="ti ti-school"></i> Temas Teóricos - Programa <?= htmlspecialchars($programaNombre) ?></h5>
-                <a href="<?= $routes['clases_teoricas_temas_create'] ?><?= $programaId ?>" class="btn btn-secondary btn-sm">
-                    <i class="ti ti-plus"></i> Crear Tema
+                <h5><i class="ti ti-school"></i> Listado de Temas:  <?= htmlspecialchars($programaNombre) ?></h5>
+                <a href="<?= $routes['clases_teoricas_temas_create'] ?><?= $programaId ?>" class="btn btn-light">
+                    <i class="ti ti-plus"></i> Nuevo Tema
                 </a>
             </div>
 
@@ -61,9 +66,10 @@
                                         <td><?= strtoupper(htmlspecialchars($tema['nombre'])) ?></td>
                                         <td><?= strtoupper(htmlspecialchars($tema['descripcion'] ?? 'Sin descripción')) ?></td>
                                         <td>
-                                            <a href="<?= $routes['clases_teoricas_temas_edit'] . $tema['id'] ?>" class="btn btn-primary btn-sm">
-                                                <i class="ti ti-pencil"></i> Editar
+                                            <a href="<?= $routes['clases_teoricas_temas_edit'] . $tema['id'] ?>" class="avtar avtar-xs btn-link-secondary" title="Editar Tema">
+                                                <i class="ti ti-edit f-20"></i>
                                             </a>
+                                        </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

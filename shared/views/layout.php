@@ -31,13 +31,11 @@
 
 <body data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
 
-  <!-- [ Pre-loader ] start -->
   <div class="loader-bg">
     <div class="loader-track">
       <div class="loader-fill"></div>
     </div>
   </div>
-  <!-- [ Pre-loader ] End -->
 
   <?php if (isset($_SESSION['user_id'])) { ?>
     <?php include "sidebar.php" ?>
@@ -49,7 +47,6 @@
       </div>
     </header>
 
-
     <div class="pc-container">
       <div class="pc-content">
         <?php echo $content; ?>
@@ -59,9 +56,7 @@
     <?php include "footer.php" ?>
 
   <?php } else { ?>
-
     <?php echo $content; ?>
-
   <?php } ?>
 
   <script src="../assets/js/plugins/popper.min.js"></script>
@@ -73,4 +68,3 @@
 
 </body>
 </html>
-

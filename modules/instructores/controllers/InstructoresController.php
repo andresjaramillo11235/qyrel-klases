@@ -23,6 +23,7 @@ class InstructoresController
         $permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
         if (!$permissionController->hasPermission($currentUserId, 'view_instructores')) {
             header('Location: /permission-denied/');
@@ -279,26 +280,27 @@ class InstructoresController
     public function create()
     {
         $categoriasInstructor = $this->getCategoriasInstructor();
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
-        $permissionController = new PermissionController();
+        //$permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
         $userUtils = new UserUtils();
 
-        if (!$permissionController->hasPermission($currentUserId, 'create_instructores')) {
-            header('Location: /permission-denied/');
-            exit;
-        }
+        // if (!$permissionController->hasPermission($currentUserId, 'create_instructores')) {
+        //     header('Location: /permission-denied/');
+        //     exit;
+        // }
 
         // Fetching the dropdown data
         $paramTiposDocumentos = $this->getParamTiposDocumentos();
-        $paramDepartamentos = $this->getParamDepartamentos();
-        $paramCiudades = $this->getParamCiudades();
+        //$paramDepartamentos = $this->getParamDepartamentos();
+        //$paramCiudades = $this->getParamCiudades();
         $paramGrupoSanguineo = $this->getParamGrupoSanguineo();
         $paramGenero = $this->getParamGenero();
-        $paramEstadoCivil = $this->getParamEstadoCivil();
-        $paramCategoriasConduccion = $this->getParamCategoriasConduccion();
-        $empresas = $this->getEmpresas();
+        //$paramEstadoCivil = $this->getParamEstadoCivil();
+        //$paramCategoriasConduccion = $this->getParamCategoriasConduccion();
+        //$empresas = $this->getEmpresas();
 
         ob_start();
         include '../modules/instructores/views/create.php';
@@ -306,129 +308,147 @@ class InstructoresController
         include '../shared/views/layout.php';
     }
 
+
+
+    // ----------------------------------------------------------
+    // 🔹 Crear Instructor (Versión Simplificada)
+    // ----------------------------------------------------------
     public function store()
     {
-        $categoriasInstructor = $_POST['categorias_instructor'] ?? [];
-
-        $permissionController = new PermissionController();
-        $currentUserId = $_SESSION['user_id'];
         $empresa_id = $_SESSION['empresa_id'];
-        $userUtils = new UserUtils();
 
-        if (!$permissionController->hasPermission($currentUserId, 'create_instructores')) {
-            header('Location: /permission-denied/');
-            exit;
-        }
-
+        // ----------------------------------------------------------
+        // 🔹 Datos básicos del formulario
+        // ----------------------------------------------------------
         $nombres = strtoupper($_POST['nombres']);
         $apellidos = strtoupper($_POST['apellidos']);
         $tipo_documento = $_POST['tipo_documento'];
         $numero_documento = $_POST['numero_documento'];
-        $expedicion_departamento = $_POST['expedicion_departamento'];
-        $expedicion_ciudad = $_POST['expedicion_ciudad'];
-        $fecha_expedicion = $_POST['fecha_expedicion'];
         $correo = strtolower($_POST['correo']);
         $celular = $_POST['celular'];
         $direccion = strtoupper($_POST['direccion']);
         $grupo_sanguineo = $_POST['grupo_sanguineo'];
         $genero = $_POST['genero'];
-        $estado_civil = $_POST['estado_civil'];
-        $vencimiento_licencia_conduccion = $_POST['vencimiento_licencia_conduccion'];
-        $vencimiento_licencia_instructor = $_POST['vencimiento_licencia_instructor'];
-        $estado = isset($_POST['estado']) ? 1 : 0;
-        $observaciones = strtoupper($_POST['observaciones']);
-        $categorias_conduccion = $_POST['categorias_conduccion'];
+        $observaciones = strtoupper($_POST['observaciones'] ?? '');
 
-        $foto = '';
+        // ----------------------------------------------------------
+        // 🔹 Campos que ya no usas → NULL
+        // ----------------------------------------------------------
+        $expedicion_departamento = null;
+        $expedicion_ciudad = null;
+        $fecha_expedicion = null;
+        $estado_civil = null;
+        $vencimiento_licencia_conduccion = null;
+        $vencimiento_licencia_instructor = null;
+        $estado = 1;
+
+        // ----------------------------------------------------------
+        // 🔹 Manejo de Foto
+        // ----------------------------------------------------------
+        $foto = 'img-defecto-instructor.png';
+
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-            // Generar un nombre único alfanumérico de 16 caracteres
-            $nombreArchivoUnico = bin2hex(random_bytes(8)); // Genera 16 caracteres hexadecimales (8 bytes * 2)
-            $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION); // Obtener la extensión del archivo
 
-            // Crear el nombre completo del archivo con la extensión
+            $nombreArchivoUnico = bin2hex(random_bytes(8));
+            $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
             $foto = $nombreArchivoUnico . '.' . $extension;
 
-            // Mover el archivo al directorio especificado
-            move_uploaded_file($_FILES['foto']['tmp_name'], '../files/fotos_instructores/' . $foto);
+            move_uploaded_file(
+                $_FILES['foto']['tmp_name'],
+                '../files/fotos_instructores/' . $foto
+            );
         }
 
-        $query = "INSERT INTO instructores (nombres, apellidos, tipo_documento, numero_documento, expedicion_departamento, 
-                    expedicion_ciudad, fecha_expedicion, correo, celular, direccion, grupo_sanguineo, genero, estado_civil, 
-                    vencimiento_licencia_conduccion, vencimiento_licencia_instructor, estado, observaciones, foto, empresa_id) 
-                  VALUES (:nombres, :apellidos, :tipo_documento, :numero_documento, :expedicion_departamento, 
-                    :expedicion_ciudad, :fecha_expedicion, :correo, :celular, :direccion, :grupo_sanguineo, :genero, :estado_civil, 
-                    :vencimiento_licencia_conduccion, :vencimiento_licencia_instructor, :estado, :observaciones, :foto, :empresa_id)";
+        // ----------------------------------------------------------
+        // 🔹 Insert Instructor
+        // ----------------------------------------------------------
+        $query = "INSERT INTO instructores (
+                nombres, apellidos, tipo_documento, numero_documento,
+                expedicion_departamento, expedicion_ciudad, fecha_expedicion,
+                correo, celular, direccion, grupo_sanguineo, genero,
+                estado_civil, vencimiento_licencia_conduccion,
+                vencimiento_licencia_instructor, estado,
+                observaciones, foto, empresa_id
+            ) VALUES (
+                :nombres, :apellidos, :tipo_documento, :numero_documento,
+                :expedicion_departamento, :expedicion_ciudad, :fecha_expedicion,
+                :correo, :celular, :direccion, :grupo_sanguineo, :genero,
+                :estado_civil, :vencimiento_licencia_conduccion,
+                :vencimiento_licencia_instructor, :estado,
+                :observaciones, :foto, :empresa_id
+            )";
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':nombres', $nombres);
-        $stmt->bindParam(':apellidos', $apellidos);
-        $stmt->bindParam(':tipo_documento', $tipo_documento);
-        $stmt->bindParam(':numero_documento', $numero_documento);
-        $stmt->bindParam(':expedicion_departamento', $expedicion_departamento);
-        $stmt->bindParam(':expedicion_ciudad', $expedicion_ciudad);
-        $stmt->bindParam(':fecha_expedicion', $fecha_expedicion);
-        $stmt->bindParam(':correo', $correo);
-        $stmt->bindParam(':celular', $celular);
-        $stmt->bindParam(':direccion', $direccion);
-        $stmt->bindParam(':grupo_sanguineo', $grupo_sanguineo);
-        $stmt->bindParam(':genero', $genero);
-        $stmt->bindParam(':estado_civil', $estado_civil);
-        $stmt->bindParam(':vencimiento_licencia_conduccion', $vencimiento_licencia_conduccion);
-        $stmt->bindParam(':vencimiento_licencia_instructor', $vencimiento_licencia_instructor);
-        $stmt->bindParam(':estado', $estado);
-        $stmt->bindParam(':observaciones', $observaciones);
-        $stmt->bindParam(':foto', $foto);
-        $stmt->bindParam(':empresa_id', $empresa_id);
+        $stmt->execute([
+            ':nombres' => $nombres,
+            ':apellidos' => $apellidos,
+            ':tipo_documento' => $tipo_documento,
+            ':numero_documento' => $numero_documento,
+            ':expedicion_departamento' => $expedicion_departamento,
+            ':expedicion_ciudad' => $expedicion_ciudad,
+            ':fecha_expedicion' => $fecha_expedicion,
+            ':correo' => $correo,
+            ':celular' => $celular,
+            ':direccion' => $direccion,
+            ':grupo_sanguineo' => $grupo_sanguineo,
+            ':genero' => $genero,
+            ':estado_civil' => $estado_civil,
+            ':vencimiento_licencia_conduccion' => $vencimiento_licencia_conduccion,
+            ':vencimiento_licencia_instructor' => $vencimiento_licencia_instructor,
+            ':estado' => $estado,
+            ':observaciones' => $observaciones,
+            ':foto' => $foto,
+            ':empresa_id' => $empresa_id
+        ]);
 
-        if ($stmt->execute()) {
+        $instructor_id = $this->conn->lastInsertId();
 
-            $instructor_id = $this->conn->lastInsertId();
-            $this->saveInstructorCategorias($instructor_id, $categoriasInstructor);
+        // ----------------------------------------------------------
+        // 🔹 Crear Usuario Automático
+        // ----------------------------------------------------------
+        $username = $numero_documento;
+        $password = password_hash($numero_documento, PASSWORD_DEFAULT);
+        $role_id = 6;
 
-            // Insert into instructor_categoria_conduccion table
-            foreach ($categorias_conduccion as $categoria_id) {
-                $query = "INSERT INTO instructor_categoria_conduccion (instructor_id, categoria_conduccion_id) 
-                          VALUES (:instructor_id, :categoria_id)";
-                $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':instructor_id', $instructor_id);
-                $stmt->bindParam(':categoria_id', $categoria_id);
-                $stmt->execute();
-            }
+        $userQuery = "INSERT INTO users (
+                    username, email, password,
+                    first_name, last_name, phone,
+                    address, status, role_id,
+                    empresa_id, instructor_id
+                  ) VALUES (
+                    :username, :email, :password,
+                    :first_name, :last_name, :phone,
+                    :address, 1, :role_id,
+                    :empresa_id, :instructor_id
+                  )";
 
-            // Crear el usuario en la tabla users
-            $username = $numero_documento;
-            $password = password_hash($numero_documento, PASSWORD_DEFAULT);
-            $role_id = 6; // INST instructor
+        $userStmt = $this->conn->prepare($userQuery);
 
-            $userQuery = "INSERT INTO users (username, email, password, first_name, last_name, phone, 
-                address, status, role_id, empresa_id, instructor_id) 
-                      VALUES (:username, :email, :password, :first_name, :last_name, :phone, :address, 
-                        '1', :role_id, :empresa_id, :instructor_id)";
-            $userStmt = $this->conn->prepare($userQuery);
+        $userStmt->execute([
+            ':username' => $username,
+            ':email' => $correo,
+            ':password' => $password,
+            ':first_name' => $nombres,
+            ':last_name' => $apellidos,
+            ':phone' => $celular,
+            ':address' => $direccion,
+            ':role_id' => $role_id,
+            ':empresa_id' => $empresa_id,
+            ':instructor_id' => $instructor_id
+        ]);
 
-            $userStmt->bindParam(':username', $username);
-            $userStmt->bindParam(':email', $correo);
-            $userStmt->bindParam(':password', $password);
-            $userStmt->bindParam(':first_name', $nombres);
-            $userStmt->bindParam(':last_name', $apellidos);
-            $userStmt->bindParam(':phone', $celular);
-            $userStmt->bindParam(':address', $direccion);
-            $userStmt->bindParam(':role_id', $role_id);
-            $userStmt->bindParam(':empresa_id', $empresa_id);
-            $userStmt->bindParam(':instructor_id', $instructor_id);
-
-            if ($userStmt->execute()) {
-                $_SESSION['instructor_creado'] = "El instructor fue creado con éxito.";
-                header('Location: /instructores/');
-                exit;
-            } else {
-                echo "Error al crear el usuario para el instructor.";
-            }
-        } else {
-            echo "Error al crear el instructor.";
-        }
+        $_SESSION['instructor_creado'] = "Instructor creado con éxito.";
+        header('Location: /instructores/');
+        exit;
     }
+
+
+
+
+
+
+
 
     public function cuenta()
     {

@@ -18,8 +18,7 @@ class HomeController
         $titulo = 'Inicio';
         $empresaId = $_SESSION['empresa_id'];
         LabelHelper::load($this->conn, $_SESSION['empresa_id']);
-
-        print_r(LabelHelper::get('menu_estudiantes'));
+        
         if ($_SESSION['rol_nombre'] == 'INST') {
             $clasesHoy = $this->clasesHoyInstructor();
             $clasesMes = $this->clasesMesInstructor();

@@ -1,10 +1,8 @@
 <div class="row">
-  <!-- Card 1 -->
   <div class="col-lg-3 col-md-6 mb-4">
     <div class="card">
       <div class="card-body py-4 px-2 text-center">
         <div class="avtar bg-primary rounded-circle mx-auto mb-2">
-          <!-- Ícono -->
           <svg class="pc-icon text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
             <path d="M4 9a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM12 9a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
             <path fill-rule="evenodd" d="M2 6h12l-1.5-4h-9L2 6zm0 1a1 1 0 0 0-1 1v4h1v1a1 1 0 1 0 2 0v-1h8v1a1 1 0 1 0 2 0v-1h1V8a1 1 0 0 0-1-1H2z" />
@@ -17,7 +15,6 @@
     </div>
   </div>
 
-  <!-- Card 2 -->
   <div class="col-lg-3 col-md-6 mb-4">
     <div class="card">
       <div class="card-body py-4 px-2 text-center">
@@ -34,7 +31,6 @@
     </div>
   </div>
 
-  <!-- Card 3 -->
   <div class="col-lg-3 col-md-6 mb-4">
     <div class="card">
       <div class="card-body py-4 px-2 text-center">
@@ -45,13 +41,12 @@
           </svg>
         </div>
         <a href="/estudiantes/" class="text-decoration-none">
-          <h6 class="mb-0 text-muted">Estudiantes</h6>
+          <h6 class="mb-0 text-muted"><?= LabelHelper::get('menu_estudiantes') ?></h6>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Card 4 -->
   <div class="col-lg-3 col-md-6 mb-4">
     <div class="card">
       <div class="card-body py-4 px-2 text-center">
@@ -67,10 +62,6 @@
     </div>
   </div>
 </div>
-
-
-
-
 
 <div class="row">
   <div class="col-xl-4 col-md-6 mb-4">
@@ -109,21 +100,3 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

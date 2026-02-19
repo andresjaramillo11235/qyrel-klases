@@ -1,20 +1,17 @@
 <?php $routes = include '../config/Routes.php'; ?>
 
-<?php /** [ breadcrumb ] start */  ?>
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
             <div class="col-md-12">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/"><i class="ti ti-home"></i> Inicio</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a href="/estudiantes/">Estudiantes</a></li>
+                    <li class="breadcrumb-item"><a href="/home/"><i class="ti ti-home"></i> <?= LabelHelper::get('menu_inicio') ?></a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="/estudiantes/"><?= LabelHelper::get('menu_estudiantes') ?></a></li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
-<?php /** [ breadcrumb ] end */  ?>
-
 
 <div class="row">
     <div class="col-sm-12">
@@ -22,10 +19,8 @@
             <div class="col-lg-5 col-xxl-3">
                 <div class="card overflow-hidden">
                     <div class="card-header">
-                        <h5>Estudiante</h5>
+                        <h5><?= LabelHelper::get('menu_estudiante') ?></h5>
                     </div>
-
-                    <?php /** [ FOTO ] **/ ?>
 
                     <div class="card-body position-relative">
                         <div class="text-center mt-3">
@@ -157,32 +152,6 @@
                                     <li class="list-group-item px-0">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Departamento de Expedición</p>
-                                                <p class="mb-0"><?= $estudiante['expedicion_departamento'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Ciudad de Expedición</p>
-                                                <p class="mb-0"><?= $estudiante['expedicion_ciudad'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Fecha de Expedición</p>
-                                                <p class="mb-0"><?= $estudiante['fecha_expedicion'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Grupo Sanguíneo</p>
-                                                <p class="mb-0"><?= $estudiante['grupo_sanguineo_nombre'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
                                                 <p class="mb-1 text-muted">Correo</p>
                                                 <p class="mb-0"><?= $estudiante['correo'] ?></p>
                                             </div>
@@ -200,21 +169,8 @@
                                                 <p class="mb-0"><?= $estudiante['direccion_residencia'] ?></p>
                                             </div>
                                             <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Dirección de Oficina</p>
-                                                <p class="mb-0"><?= $estudiante['direccion_oficina'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Teléfono de Oficina</p>
-                                                <p class="mb-0"><?= $estudiante['telefono_oficina'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Ocupación</p>
-                                                <p class="mb-0"><?= $estudiante['ocupacion_nombre'] ?></p>
+                                                <p class="mb-1 text-muted">Grupo Sanguíneo</p>
+                                                <p class="mb-0"><?= $estudiante['grupo_sanguineo_nombre'] ?></p>
                                             </div>
                                         </div>
                                     </li>
@@ -232,59 +188,7 @@
                                         </div>
                                     </li>
 
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Jornada</p>
-                                                <p class="mb-0"><?= $estudiante['jornada_nombre'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Estado Civil</p>
-                                                <p class="mb-0"><?= $estudiante['estado_civil_nombre'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Barrio</p>
-                                                <p class="mb-0"><?= $estudiante['barrio'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Estrato</p>
-                                                <p class="mb-0"><?= $estudiante['estrato_nombre'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Seguridad Social</p>
-                                                <p class="mb-0"><?= $estudiante['seguridad_social_nombre'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Nivel de Educación</p>
-                                                <p class="mb-0"><?= $estudiante['nivel_educacion_nombre'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Ciudad de Origen</p>
-                                                <p class="mb-0"><?= $estudiante['ciudad_origen'] ?></p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p class="mb-1 text-muted">Discapacidad</p>
-                                                <p class="mb-0"><?= $estudiante['discapacidad_nombre'] ?></p>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                    <li class="list-group-item px-0">
+                                     <li class="list-group-item px-0">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <p class="mb-1 text-muted">Nombre del Contacto</p>
@@ -363,8 +267,6 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-
-
 
                             <?php /** DETALLE DE MATRÍCULA */ ?>
 
@@ -455,7 +357,6 @@
                                     </ul>
                                 </div>
                             </div>
-
 
                             <?php /** INICIO CLASES PRACTICAS */ ?>
 

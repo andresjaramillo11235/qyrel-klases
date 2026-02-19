@@ -1,9 +1,6 @@
 <?php
 $routes = include '../config/Routes.php';
 require_once '../shared/utils/enlaces.php';
-$botIa = enlace_by_id_enlace('bot_ia');
-$traccar = enlace_by_id_enlace('traccar');
-$calendar = enlace_by_id_enlace('calendar'); // solo activos
 ?>
 
 <li class="pc-item">
@@ -25,7 +22,6 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
     </a>
     <ul class="pc-submenu">
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['matriculas_dashboard']; ?>">Dashboard</a></li>
         <li class="pc-item"><a class="pc-link" href="/matriculas/">Listado</a></li>
         <li class="pc-item"><a class="pc-link" href="/matriculascreate/">Crear</a></li>
     </ul>
@@ -43,7 +39,6 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="/estudiantes/">Listado</a></li>
         <li class="pc-item"><a class="pc-link" href="/estudiantescreate/">Nuevo</a></li>
-        <!-- <li class="pc-item"><a class="pc-link" href="<?= $routes['clientes_nuevos_index']; ?>">Clientes Nuevos</a></li> -->
     </ul>
 </li>
 
@@ -53,12 +48,12 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
         <span class="pc-micon">
             <i class="ph-duotone ph-chalkboard-teacher"></i>
         </span>
-        <span class="pc-mtext">Instructores</span>
+        <span class="pc-mtext"><?= LabelHelper::get('menu_instructores') ?></span>
         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
     </a>
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="/instructores/">Listado</a></li>
-        <li class="pc-item"><a class="pc-link" href="/instructorescreate/">Crear</a></li>
+        <li class="pc-item"><a class="pc-link" href="/instructorescreate/">Nuevo</a></li>
     </ul>
 </li>
 
@@ -93,24 +88,10 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
     </a>
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_practicas_listado_admin'] ?>">Listado</a></li>
-        <li class="pc-item"><a class="pc-link" href="/clasespracticascronograma/">Calendario</a></li>
         <li class="pc-item"><a class="pc-link" href="<?= $routes['calificaciones_index'] ?>">Calificaciones</a></li>
         <li class="pc-item"><a class="pc-link" href="<?= $routes['novedades_index'] ?>">Novedades</a></li>
     </ul>
 </li>
-
-
-<?php if ($calendar && !empty($calendar['url'])): ?>
-    <li class="pc-item">
-        <a href="<?= htmlspecialchars($calendar['url']) ?>" class="pc-link" target="_blank" rel="noopener noreferrer">
-            <span class="pc-micon">
-                <!-- Icono estilo calendario (Phosphor) -->
-                <i class="ph-duotone ph-calendar-blank"></i>
-            </span>
-            <span class="pc-mtext">Certificaciones</span>
-        </a>
-    </li>
-<?php endif; ?>
 
 
 <li class="pc-item">
@@ -122,27 +103,7 @@ $calendar = enlace_by_id_enlace('calendar'); // solo activos
     </a>
 </li>
 
-<?php /* ********** Vehículos********** */ ?>
-<li class="pc-item pc-hasmenu">
-    <a href="#!" class="pc-link">
-        <span class="pc-micon">
-            <i class="ti ti-car"></i>
-        </span>
-        <span class="pc-mtext">Vehículos</span>
-        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
-    </a>
-    <ul class="pc-submenu">
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['vehiculos_index']; ?>">Listado</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['vehiculos_create']; ?>">Crear</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['dispositivos_gps_index']; ?>">Dispositivos Gps</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['seguimiento_index']; ?>" target="_blank">Seguimiento Flota</a></li>
 
-        <?php if ($botIa && !empty($botIa['url'])): ?>
-            <li class="pc-item"><a class="pc-link" href="<?= htmlspecialchars($traccar['url']) ?>" target="_blank">Traccar</a></li>
-        <?php endif; ?>
-
-    </ul>
-</li>
 
 <li class="pc-item">
     <a href="/convenios/" class="pc-link">

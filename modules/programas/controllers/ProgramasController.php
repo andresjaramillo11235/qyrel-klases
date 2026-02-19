@@ -4,6 +4,8 @@ require_once '../config/DatabaseConfig.php';
 require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../shared/utils/UserUtils.php';
 require_once '../modules/auditoria/controllers/AuditoriaController.php';
+require_once '../shared/utils/LabelHelper.php';
+
 
 class ProgramasController
 {
@@ -19,6 +21,7 @@ class ProgramasController
 
     public function index()
     {
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
         $permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
@@ -72,96 +75,98 @@ class ProgramasController
         include '../shared/views/layout.php';
     }
 
+    // ----------------------------------------------------------
+    // 🔹 Crear Programa - Versión Simplificada KLASES
+    // ----------------------------------------------------------
     public function store()
     {
-        $routes = include '../config/Routes.php';
-
-        $permissionController = new PermissionController();
-        $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
 
-        if (!$permissionController->hasPermission($currentUserId, 'create_programas')) {
-            echo "No tienes permiso para realizar esta acción.";
-            return;
+        // ----------------------------------------------------------
+        // 🔹 Datos básicos del formulario
+        // ----------------------------------------------------------
+        $nombre = strtoupper(trim($_POST['nombre'] ?? ''));
+        $descripcion = strtoupper(trim($_POST['descripcion'] ?? ''));
+
+        if (empty($nombre)) {
+            $_SESSION['error_message'] = 'El nombre del programa es obligatorio.';
+            header('Location: /programascreate/');
+            exit;
         }
 
-        // Validar y limpiar datos del formulario
-        $nombre = $_POST['nombre'] ?? '';
-        $descripcion = $_POST['descripcion'] ?? '';
-        $valor_total = 0;
-        $valor_hora = 0;
+        // ----------------------------------------------------------
+        // 🔹 Campos no utilizados → NULL
+        // ----------------------------------------------------------
+        $valor_total = null;
+        $valor_hora = null;
         $valor_texto = null;
-        $horas_practicas = intval($_POST['horas_practicas'] ?? 0);
-        $horas_teoricas = intval($_POST['horas_teoricas'] ?? 0);
-        $categoria = intval($_POST['categoria'] ?? null);
-        $siet = $_POST['siet'] ?? null;
-        $estado = '1';
-        $tipo_servicio = $_POST['tipo_servicio'] ?? '';
-        $tipo_vehiculo_id = intval($_POST['tipo_vehiculo_id'] ?? null); // Nuevo campo agregado
+        $horas_practicas = null;
+        $horas_teoricas = null;
+        $categoria = null;
+        $siet = null;
+        $estado = 1;
+        $tipo_servicio = null;
+        $tipo_vehiculo_id = null;
 
+        // ----------------------------------------------------------
+        // 🔹 Insert Programa
+        // ----------------------------------------------------------
         $query = "
-            INSERT INTO programas (
-                nombre,
-                descripcion,
-                valor_total,
-                valor_hora,
-                valor_texto,
-                horas_practicas,
-                horas_teoricas,
-                categoria,
-                siet,
-                estado,
-                tipo_servicio,
-                empresa_id,
-                tipo_vehiculo_id
-            ) VALUES (
-                :nombre,
-                :descripcion,
-                :valor_total,
-                :valor_hora,
-                :valor_texto,
-                :horas_practicas,
-                :horas_teoricas,
-                :categoria,
-                :siet,
-                :estado,
-                :tipo_servicio,
-                :empresa_id,
-                :tipo_vehiculo_id
-            )
-        ";
+        INSERT INTO programas (
+            nombre,
+            descripcion,
+            valor_total,
+            valor_hora,
+            valor_texto,
+            horas_practicas,
+            horas_teoricas,
+            categoria,
+            siet,
+            estado,
+            tipo_servicio,
+            empresa_id,
+            tipo_vehiculo_id
+        ) VALUES (
+            :nombre,
+            :descripcion,
+            :valor_total,
+            :valor_hora,
+            :valor_texto,
+            :horas_practicas,
+            :horas_teoricas,
+            :categoria,
+            :siet,
+            :estado,
+            :tipo_servicio,
+            :empresa_id,
+            :tipo_vehiculo_id
+        )
+    ";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nombre', $nombre);
-        $stmt->bindParam(':descripcion', $descripcion);
-        $stmt->bindParam(':valor_total', $valor_total, PDO::PARAM_INT);
-        $stmt->bindParam(':valor_hora', $valor_hora, PDO::PARAM_INT);
-        $stmt->bindParam(':valor_texto', $valor_texto);
-        $stmt->bindParam(':horas_practicas', $horas_practicas, PDO::PARAM_INT);
-        $stmt->bindParam(':horas_teoricas', $horas_teoricas, PDO::PARAM_INT);
-        $stmt->bindParam(':categoria', $categoria, PDO::PARAM_INT);
-        $stmt->bindParam(':siet', $siet);
-        $stmt->bindParam(':estado', $estado);
-        $stmt->bindParam(':tipo_servicio', $tipo_servicio);
-        $stmt->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
-        $stmt->bindParam(':tipo_vehiculo_id', $tipo_vehiculo_id, PDO::PARAM_INT); // Nuevo parámetro
 
-        if ($stmt->execute()) {
+        $stmt->execute([
+            ':nombre' => $nombre,
+            ':descripcion' => $descripcion,
+            ':valor_total' => $valor_total,
+            ':valor_hora' => $valor_hora,
+            ':valor_texto' => $valor_texto,
+            ':horas_practicas' => $horas_practicas,
+            ':horas_teoricas' => $horas_teoricas,
+            ':categoria' => $categoria,
+            ':siet' => $siet,
+            ':estado' => $estado,
+            ':tipo_servicio' => $tipo_servicio,
+            ':empresa_id' => $empresaId,
+            ':tipo_vehiculo_id' => $tipo_vehiculo_id
+        ]);
 
-            // Registro auditoría
-            $Id = $this->conn->lastInsertId();
-            $descripcion = "Se creó el programa: " . $nombre . " con ID " . $Id;
-            $auditoriaController = new AuditoriaController();
-            $auditoriaController->registrar($currentUserId, 'Crear', 'Programas', $descripcion, $empresaId);
-
-            $_SESSION['success_message'] = 'Programa creado correctamente.';
-            header('Location: ' . $routes['programas_index']);
-        } else {
-            $_SESSION['error_message'] = 'Error al crear el programa.';
-            header('Location: ' . $routes['programas_index']);
-        }
+        $routes = include '../config/Routes.php';
+        $_SESSION['success_message'] = 'Programa creado correctamente.';
+        header('Location:' . $routes['programas_index']);
         exit;
     }
+
 
     public function edit($id)
     {

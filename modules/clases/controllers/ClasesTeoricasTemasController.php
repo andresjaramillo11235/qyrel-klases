@@ -3,6 +3,7 @@
 require_once '../config/DatabaseConfig.php';
 require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../modules/auditoria/controllers/AuditoriaController.php';
+require_once '../shared/utils/LabelHelper.php';
 
 class ClasesTeoricasTemasController
 {

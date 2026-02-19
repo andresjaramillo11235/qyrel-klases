@@ -20,7 +20,6 @@
     </script>
 <?php endif; ?>
 
-<?php /** [ breadcrumb ] start */  ?>
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
@@ -38,7 +37,6 @@
         </div>
     </div>
 </div>
-<?php /** [ breadcrumb ] end */  ?>
 
 <table class="table table-bordered table-striped" id="tablaEstudiantes">
     <thead>

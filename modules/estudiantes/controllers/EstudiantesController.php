@@ -612,6 +612,7 @@ class EstudiantesController
         $currentUserId = $_SESSION['user_id'];
         $empresaId = $_SESSION['empresa_id'];
         $permissionController = new PermissionController();
+        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
 
         // Verificar permisos para ver estudiantes
         if (!$permissionController->hasPermission($currentUserId, 'view_students')) {
