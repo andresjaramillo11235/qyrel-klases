@@ -1,18 +1,28 @@
-<!-- [ breadcrumb ] start -->
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
-            <div class="col-md-12">
+
+            <div class="col-12">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/matriculas/">Matrículas</a></li>
-                    <li class="breadcrumb-item" aria-current="page">Nueva matrícula</li>
+                    <li class="breadcrumb-item">
+                        <a href="/home/"><i class="ti ti-home"></i> Inicio</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/matriculas/">
+                            <?= LabelHelper::get('menu_matriculas') ?>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#">
+                            Crear <?= LabelHelper::get('menu_matricula') ?>
+                        </a>
+                    </li>
                 </ul>
             </div>
+
         </div>
     </div>
 </div>
-<!-- [ breadcrumb ] end -->
 
 <!-- [ Main Content ] start -->
 <div class="row">
@@ -20,7 +30,7 @@
         <div class="card">
 
             <div class="card-header">
-                <h5>Datos de la nueva matrícula: los campos con <i class="ph-duotone ph-asterisk"></i> son obligatorios.</h5>
+                <h5>Los campos con <i class="ph-duotone ph-asterisk"></i> son obligatorios.</h5>
             </div>
 
             <div class="card-body">
@@ -64,39 +74,13 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="tipo_solicitud_id" class="form-label">Tipo Solicitud <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-control" id="tipo_solicitud_id" name="tipo_solicitud_id" required>
-                                    <?php foreach ($tiposSolicitud as $tipo) : ?>
-                                        <option value="<?= $tipo['id'] ?>"><?= $tipo['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label for="valor_matricula" class="form-label">Valor de la Matrícula</label>
+                                <input type="text" class="form-control" id="valor_matricula_display" placeholder="$0" required>
+                                <input type="hidden" id="valor_matricula" name="valor_matricula">
+                                <div class="invalid-feedback">Ingrese un valor.</div>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="estado_id" class="form-label">Estado de Matrícula <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-control" id="estado_id" name="estado_id" required>
-                                    <?php foreach ($estadosMatricula as $estado) : ?>
-                                        <option value="<?= $estado['id'] ?>"><?= $estado['nombre'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="convenio_id" class="form-label">Convenio <i class="ph-duotone ph-asterisk"></i></label>
-                                <select class="form-control" id="convenio_id" name="convenio_id" required>
-                                    <option value="">Seleccione un convenio</option>
-                                    <?php foreach ($convenios as $convenio) : ?>
-                                        <option value="<?= $convenio['id'] ?>"><?= htmlspecialchars($convenio['nombre']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-
-                                <div class="invalid-feedback">Seleccione un convenio.</div>
-                            </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -105,26 +89,18 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="valor_matricula" class="form-label">Valor de la Matrícula</label>
-                                <input type="text" class="form-control" id="valor_matricula_display" placeholder="$0" required>
-                                <input type="hidden" id="valor_matricula" name="valor_matricula">
-                                <div class="invalid-feedback">Ingrese un valor.</div>
-                            </div>
-                        </div>
-
                         <div class="col-md-12 text-end">
                             <input type="hidden" name="empresa_id" value="<?= $_SESSION['empresa_id'] ?>">
-
-                            <button type="submit" id="submit_button" class="btn btn-primary">
-                                <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="spinner"></span>
-                                Enviar
-                            </button>
-
                         </div>
-
                     </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" id="submit_button" class="btn btn-primary">
+                            <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="spinner"></span>
+                            Enviar
+                        </button>
+                    </div>
+
                 </form>
 
             </div>
@@ -164,12 +140,9 @@
     </div>
 </div>
 
-
 <script src="../assets/js/plugins/bouncer.min.js"></script>
 <script src="../assets/js/pages/form-validation.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -190,8 +163,6 @@
         });
     });
 </script>
-
-
 
 <script>
     // Bootstrap validation
@@ -214,7 +185,6 @@
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 
 <script>
     $(document).ready(function() {
@@ -265,62 +235,6 @@
     });
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectPrograma = document.getElementById('programas');
-        const selectConvenio = document.getElementById('convenio_id');
-        const inputValorMatricula = document.getElementById('valor_matricula');
-        const inputValorMatriculaDisplay = document.getElementById('valor_matricula_display');
-
-        function actualizarValorMatricula() {
-            const programaId = selectPrograma.value;
-            const convenioId = selectConvenio.value;
-
-            // Validar si ambos campos están seleccionados
-            if (!programaId || !convenioId) {
-                inputValorMatricula.value = '';
-                inputValorMatriculaDisplay.value = '$0';
-                return;
-            }
-
-            // Construir la URL para la solicitud
-            const url = `/5678AbCdEf/${programaId}/${convenioId}`;
-
-            // Realizar la solicitud al backend
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Actualizar los campos con el valor obtenido
-                        const valor = parseFloat(data.valor).toLocaleString('es-CO', {
-                            style: 'currency',
-                            currency: 'COP'
-                        });
-
-                        inputValorMatricula.value = data.valor;
-                        inputValorMatriculaDisplay.value = valor;
-                    } else {
-                        inputValorMatricula.value = '';
-                        inputValorMatriculaDisplay.value = '$0';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al obtener el valor del convenio:", error);
-                    inputValorMatricula.value = '';
-                    inputValorMatriculaDisplay.value = '$0';
-                });
-        }
-
-        // Agregar eventos a los selects
-        selectPrograma.addEventListener('change', actualizarValorMatricula);
-        selectConvenio.addEventListener('change', actualizarValorMatricula);
-    });
-</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

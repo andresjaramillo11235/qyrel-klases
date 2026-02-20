@@ -158,8 +158,11 @@ $router->get($routes['estudiantes_progreso_teorico'], 'modules\\estudiantes\\con
 $router->post($routes['estudiantes_progreso_teorico'], 'modules\\estudiantes\\controllers\\EstudiantesController@progresoTeorico');
 $router->post($routes['clases_teoricas_estudiante_unsuscribe'], 'modules\\estudiantes\\controllers\\EstudiantesController@estudianteDesinscribir');
 
+
 ## MATRICULAS ##
+$router->get('/matriculas/([0-9]+)/([0-9]+)', 'modules\\matriculas\\controllers\\MatriculasController@index');
 $router->get('/matriculas/', 'modules\\matriculas\\controllers\\MatriculasController@index');
+
 $router->post('/matriculas/', 'modules\\matriculas\\controllers\\MatriculasController@index');
 $router->get('/matriculascreate/', 'modules\\matriculas\\controllers\\MatriculasController@create');
 $router->post('/matriculas/store', 'modules\\matriculas\\controllers\\MatriculasController@store');
@@ -168,6 +171,7 @@ $router->post('/matriculasupdate/', 'modules\\matriculas\\controllers\\Matricula
 $router->get($routes['matriculas_delete'] . '([a-zA-Z0-9-]+)', 'modules\\matriculas\\controllers\\MatriculasController@delete');
 $router->get('/matriculasdetail/([a-zA-Z0-9]+)', 'modules\\matriculas\\controllers\\MatriculasController@detail');
 $router->get('/matriculas/activate/([a-zA-Z0-9]+)', 'modules\\matriculas\\controllers\\MatriculasController@activate');
+
 
 $router->GET($routes['matriculas_validar_programa_estudiante'] . '([0-9]+)/([0-9]+)', 'modules\\matriculas\\controllers\\MatriculasController@validarProgramaEstudiante');
 $router->get($routes['matriculas_dashboard'], 'modules\\matriculas\\controllers\\MatriculasController@matriculasDashboard');

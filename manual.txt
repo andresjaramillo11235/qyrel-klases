@@ -1,0 +1,139 @@
+xcelente decisión 👌
+Ahora lo vamos a dejar 100% transversal y reutilizable para toda la app.
+
+La idea es:
+
+Que ningún módulo vuelva a escribir lógica de paginación
+
+Que todos usen el mismo patrón
+
+Que el controlador solo se encargue de la consulta
+
+Que el Paginator maneje offset, limit y render
+
+🎯 Objetivo final
+
+En cualquier módulo hacer simplemente:
+
+$total = ...;
+$paginator = new Paginator($total, [
+    'page' => $page,
+    'per_page' => $perPage,
+    'base_path' => '/modulo'
+]);
+
+$offset = $paginator->getOffset();
+$limit  = $paginator->getLimit();
+
+Y listo.
+
+🚀 PASO 1 — Estandarizar firma del método index
+
+Todos los módulos deben aceptar:
+
+public function index($page = 1, $perPage = 20)
+
+Siempre.
+
+Eso hace que tu router sea uniforme:
+
+$router->get('/estudiantes/([0-9]+)/([0-9]+)', '...');
+$router->get('/estudiantes/', '...');
+🚀 PASO 2 — Estructura estándar de controlador
+
+Todos los módulos deberían seguir este patrón:
+
+// ----------------------------------------------------------
+// 🔹 Contar registros
+// ----------------------------------------------------------
+$countStmt = $this->conn->prepare("
+    SELECT COUNT(*) 
+    FROM estudiantes 
+    WHERE empresa_id = :empresa_id
+");
+$countStmt->bindParam(':empresa_id', $empresaId);
+$countStmt->execute();
+$total = $countStmt->fetchColumn();
+
+// ----------------------------------------------------------
+// 🔹 Inicializar paginador
+// ----------------------------------------------------------
+$paginator = new Paginator($total, [
+    'page' => $page,
+    'per_page' => $perPage,
+    'base_path' => '/estudiantes'
+]);
+
+$offset = $paginator->getOffset();
+$limit  = $paginator->getLimit();
+
+// ----------------------------------------------------------
+// 🔹 Consulta paginada
+// ----------------------------------------------------------
+$stmt = $this->conn->prepare("
+    SELECT *
+    FROM estudiantes
+    WHERE empresa_id = :empresa_id
+    ORDER BY id DESC
+    LIMIT :limit OFFSET :offset
+");
+
+$stmt->bindParam(':empresa_id', $empresaId);
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+🚀 PASO 3 — Estructura estándar en la vista
+
+Siempre al final del listado:
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <?= $paginator->summary(); ?>
+    <?= $paginator->render(); ?>
+</div>
+
+Y listo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /*
+            // Enviar el correo de confirmación 
+            $mailController = new MailController();
+            $estudiantesController = new EstudiantesController();
+            $informacionEstudiante = $estudiantesController->obtenerInformacionEstudiante($estudiante_id);
+            $nombreEstudiante = $informacionEstudiante['nombres'];
+            $nombreEstudiante .= ' ' . $informacionEstudiante['apellidos'];
+            $destinatario = $informacionEstudiante['correo'];
+
+            // Cargar la plantilla
+            $rutaPlantilla = '../modules/mail/views/plantilla_matricula.php';
+            $variables = [
+                'id_matricula' => $id,
+                'fecha_inscripcion' => $fecha_inscripcion,
+                'nombre_empresa' => $_SESSION['empresa_nombre']
+            ];
+            $contenidoHtml = $mailController->cargarPlantilla($rutaPlantilla, $variables);
+
+            // Enviar correo
+            $asunto = 'Confirmación de Matrícula en CeaCloud';
+
+            $mailController->sendMail($destinatario, $nombreEstudiante, $asunto, $contenidoHtml);
+            // Fin Enviar el correo de confirmación 
+            */

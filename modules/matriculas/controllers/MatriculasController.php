@@ -5,6 +5,7 @@ require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../shared/utils/UserUtils.php';
 require_once '../modules/auditoria/controllers/AuditoriaController.php';
 require_once '../shared/utils/LabelHelper.php';
+require_once '../shared/lib/Paginator.php';
 
 class MatriculasController
 {
@@ -18,83 +19,122 @@ class MatriculasController
         $this->userUtils = new UserUtils();
     }
 
-    public function index()
+    // ----------------------------------------------------------
+    // 🔹 Listado de Matrículas (Paginado)
+    // ----------------------------------------------------------
+    public function index($page = 1, $perPage = 20)
     {
+        // ----------------------------------------------------------
+        // 🔹 Inicialización básica
+        // ----------------------------------------------------------
         $permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
-        $empresaId = $_SESSION['empresa_id'];
-        LabelHelper::load($this->conn, $_SESSION['empresa_id']);
+        $empresaId     = $_SESSION['empresa_id'];
 
+        LabelHelper::load($this->conn, $empresaId);
+
+        // ----------------------------------------------------------
+        // 🔹 Validación de permisos
+        // ----------------------------------------------------------
         if (!$permissionController->hasPermission($currentUserId, 'view_matriculas')) {
             header('Location: /permission-denied/');
             return;
         }
 
-        // Filtro de fechas
+        // ----------------------------------------------------------
+        // 🔹 Filtro por fechas (SOLO si el usuario lo envía)
+        // ----------------------------------------------------------
         $fechaInicio = $_POST['fecha_inicio'] ?? null;
-        $fechaFin = $_POST['fecha_fin'] ?? null;
+        $fechaFin    = $_POST['fecha_fin'] ?? null;
 
         $whereFechas = '';
-        if ($fechaInicio && $fechaFin) {
+        $params = [
+            ':empresa_id' => $empresaId
+        ];
+
+        if (!empty($fechaInicio) && !empty($fechaFin)) {
             $whereFechas = " AND m.fecha_inscripcion BETWEEN :fecha_inicio AND :fecha_fin";
+            $params[':fecha_inicio'] = $fechaInicio;
+            $params[':fecha_fin']    = $fechaFin;
         }
 
+        // ----------------------------------------------------------
+        // 🔹 Consulta para contar registros
+        // ----------------------------------------------------------
+        $countQuery = "
+            SELECT COUNT(*)
+            FROM matriculas m
+            WHERE m.empresa_id = :empresa_id
+            $whereFechas
+        ";
+
+        $countStmt = $this->conn->prepare($countQuery);
+        foreach ($params as $key => $value) {
+            $countStmt->bindValue($key, $value);
+        }
+
+        $countStmt->execute();
+        $totalRegistros = (int) $countStmt->fetchColumn();
+
+        // ----------------------------------------------------------
+        // 🔹 Inicializar Paginador
+        // ----------------------------------------------------------
+        $paginator = new Paginator($totalRegistros, [
+            'page'      => $page,
+            'per_page'  => $perPage,
+            'base_path' => '/matriculas'
+        ]);
+
+        // ----------------------------------------------------------
+        // 🔹 Consulta principal paginada (Optimizada)
+        // ----------------------------------------------------------
         $query = "
             SELECT 
-                m.*, 
-                e.nombres AS estudiante_nombres, 
-                e.apellidos AS estudiante_apellidos, 
-                e.numero_documento AS estudiante_numero_documento, 
-                e.fecha_nacimiento,
-                e.celular AS estudiante_celular,
-                pg.nombre AS genero_nombre,
-                pec.nombre AS estado_civil_nombre,
-                ts.nombre AS tipo_solicitud_nombre, 
-                p.nombre AS programa_nombre, 
-                mp.programa_id,
-                c.nombre AS convenio_nombre, 
-                es.nombre AS estado_nombre
-            FROM 
-                matriculas m
-            LEFT JOIN 
-                estudiantes e ON m.estudiante_id = e.id
-            LEFT JOIN 
-                param_genero pg ON e.genero = pg.id
-            LEFT JOIN 
-                param_estado_civil pec ON e.estado_civil = pec.id
-            LEFT JOIN 
-                param_tipos_solicitud ts ON m.tipo_solicitud_id = ts.id
-            LEFT JOIN 
-                matricula_programas mp ON m.id = mp.matricula_id
-            LEFT JOIN 
-                programas p ON mp.programa_id = p.id
-            LEFT JOIN 
-                convenios c ON m.convenio_id = c.id
-            LEFT JOIN 
-                param_matriculas_estados es ON m.estado = es.id
-            WHERE 
-                m.empresa_id = :empresa_id
-                $whereFechas
-            ORDER BY 
-                m.fecha_inscripcion DESC
+                m.id AS codigo,
+                m.fecha_inscripcion,
+                p.nombre AS programa_nombre,
+                e.nombres AS estudiante_nombres,
+                e.apellidos AS estudiante_apellidos,
+                e.numero_documento,
+                m.valor_matricula
+            FROM matriculas m
+            LEFT JOIN estudiantes e ON m.estudiante_id = e.id
+            LEFT JOIN matricula_programas mp ON m.id = mp.matricula_id
+            LEFT JOIN programas p ON mp.programa_id = p.id
+            WHERE m.empresa_id = :empresa_id
+            $whereFechas
+            ORDER BY m.fecha_inscripcion DESC
+            LIMIT :limit OFFSET :offset
         ";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':empresa_id', $empresaId);
 
-        if ($fechaInicio && $fechaFin) {
-            $stmt->bindParam(':fecha_inicio', $fechaInicio);
-            $stmt->bindParam(':fecha_fin', $fechaFin);
+        // Bind dinámico de parámetros
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
         }
+
+        $stmt->bindValue(':limit',  $paginator->getLimit(),  PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $paginator->getOffset(), PDO::PARAM_INT);
 
         $stmt->execute();
         $matriculas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // ----------------------------------------------------------
+        // 🔹 Renderizar vista
+        // ----------------------------------------------------------
+        $paginationHtml = $paginator->render();
+
         ob_start();
         include '../modules/matriculas/views/index.php';
         $content = ob_get_clean();
+
         include '../shared/views/layout.php';
     }
+
+
+
+
 
     public function getUsers()
     {
@@ -111,7 +151,7 @@ class MatriculasController
         $empresaId = $_SESSION['empresa_id'];
         $userUtils = new UserUtils();
         LabelHelper::load($this->conn, $_SESSION['empresa_id']);
-        
+
         if (!$permissionController->hasPermission($currentUserId, 'create_matriculas')) {
             header('Location: /permission-denied/');
             return;
@@ -130,144 +170,245 @@ class MatriculasController
         include '../shared/views/layout.php';
     }
 
+    // public function store()
+    // {
+    //     require_once '../modules/mail/MailController.php';
+    //     require_once '../modules/estudiantes/controllers/EstudiantesController.php';
+
+    //     $permissionController = new PermissionController();
+    //     $currentUserId = $_SESSION['user_id'];
+    //     $empresa_id = $_SESSION['empresa_id'];
+
+    //     if (!$permissionController->hasPermission($currentUserId, 'create_matriculas')) {
+    //         echo "No tienes permiso para realizar esta acción.";
+    //         return;
+    //     }
+
+    //     $programa_id = $_POST['programas'];
+
+    //     $valor_matricula = $_POST['valor_matricula'];
+    //     $estudiante_id = $_POST['estudiante_id'];
+    //     $tipo_solicitud_id = $_POST['tipo_solicitud_id'];
+    //     $convenio_id = $_POST['convenio_id']; // Nuevo campo
+    //     $estado = $_POST['estado_id']; // Campo necesario
+    //     $observaciones = strtoupper($_POST['observaciones']); // Convertir observaciones a mayúsculas
+
+    //     // Obtener el número de documento del estudiante para generar el ID único
+    //     $query = "SELECT numero_documento FROM estudiantes WHERE id = :estudiante_id";
+    //     $stmt = $this->conn->prepare($query);
+    //     $stmt->bindParam(':estudiante_id', $estudiante_id);
+    //     $stmt->execute();
+    //     $numeroDocumento = $stmt->fetchColumn();
+
+    //     $id = $this->generateStructuredId();
+    //     $fecha_inscripcion = $_POST['fecha_inscripcion'];
+
+    //     // Opcionales, validar si existen antes de asignar
+    //     $fecha_enrolamiento = !empty($_POST['fecha_enrolamiento']) ? $_POST['fecha_enrolamiento'] : null;
+    //     $fecha_aprovacion_teorico = !empty($_POST['fecha_aprovacion_teorico']) ? $_POST['fecha_aprovacion_teorico'] : null;
+    //     $fecha_aprovacion_practico = !empty($_POST['fecha_aprovacion_practico']) ? $_POST['fecha_aprovacion_practico'] : null;
+    //     $fecha_certificacion = !empty($_POST['fecha_certificacion']) ? $_POST['fecha_certificacion'] : null;
+
+    //     // Asignar la fecha de vencimiento basada en la fecha de enrolamiento, si existe
+    //     $fecha_vencimiento = $fecha_enrolamiento ? date('Y-m-d', strtotime($fecha_enrolamiento . ' + 90 days')) : null;
+
+    //     // Agregar `valor_matricula` en la consulta de inserción
+    //     $query = "
+    //         INSERT INTO matriculas (
+    //             id, 
+    //             fecha_inscripcion, 
+    //             fecha_enrolamiento, 
+    //             fecha_vencimiento, 
+    //             fecha_aprovacion_teorico, 
+    //             fecha_aprovacion_practico, 
+    //             fecha_certificacion, 
+    //             estudiante_id, 
+    //             tipo_solicitud_id, 
+    //             convenio_id,  
+    //             estado, 
+    //             observaciones, 
+    //             empresa_id, 
+    //             valor_matricula -- Nuevo campo
+    //         ) 
+    //         VALUES (
+    //             :id, 
+    //             :fecha_inscripcion, 
+    //             :fecha_enrolamiento, 
+    //             :fecha_vencimiento, 
+    //             :fecha_aprovacion_teorico, 
+    //             :fecha_aprovacion_practico, 
+    //             :fecha_certificacion, 
+    //             :estudiante_id, 
+    //             :tipo_solicitud_id, 
+    //             :convenio_id,  
+    //             :estado, 
+    //             :observaciones, 
+    //             :empresa_id, 
+    //             :valor_matricula -- Nuevo campo
+    //         )
+    //         ";
+
+    //     $stmt = $this->conn->prepare($query);
+    //     $stmt->bindParam(':id', $id);
+    //     $stmt->bindParam(':fecha_inscripcion', $fecha_inscripcion);
+    //     $stmt->bindParam(':fecha_enrolamiento', $fecha_enrolamiento);
+    //     $stmt->bindParam(':fecha_vencimiento', $fecha_vencimiento);
+    //     $stmt->bindParam(':fecha_aprovacion_teorico', $fecha_aprovacion_teorico);
+    //     $stmt->bindParam(':fecha_aprovacion_practico', $fecha_aprovacion_practico);
+    //     $stmt->bindParam(':fecha_certificacion', $fecha_certificacion);
+    //     $stmt->bindParam(':estudiante_id', $estudiante_id);
+    //     $stmt->bindParam(':tipo_solicitud_id', $tipo_solicitud_id);
+    //     $stmt->bindParam(':convenio_id', $convenio_id); // Nuevo campo
+    //     $stmt->bindParam(':estado', $estado);
+    //     $stmt->bindParam(':observaciones', $observaciones);
+    //     $stmt->bindParam(':empresa_id', $empresa_id);
+    //     $stmt->bindParam(':valor_matricula', $valor_matricula, PDO::PARAM_INT);
+
+    //     if ($stmt->execute()) {
+
+    //         // Insertar el programa asociado a la matrícula (solo uno)
+    //         if (!empty($programa_id)) { // Asegúrate de que $programa_id esté definido y no esté vacío
+    //             $queryPrograma = "INSERT INTO matricula_programas (matricula_id, programa_id) VALUES (:matricula_id, :programa_id)";
+    //             $stmtPrograma = $this->conn->prepare($queryPrograma);
+    //             $stmtPrograma->bindParam(':matricula_id', $id);
+    //             $stmtPrograma->bindParam(':programa_id', $programa_id);
+    //             $stmtPrograma->execute();
+    //         } else {
+    //             // Manejar el caso en el que no se proporciona un programa (opcional)
+    //             throw new Exception("No se ha proporcionado un programa para la matrícula.");
+    //         }
+
+    //         $_SESSION['matricula_creada'] = 'Matrícula creada con éxito.';
+    //         header('Location: /matriculas/');
+    //         exit;
+    //     }
+    // }
+
+
+    // ----------------------------------------------------------
+    // 🔹 Crear Matrícula (Versión Simplificada + Programa)
+    // ----------------------------------------------------------
     public function store()
     {
-        require_once '../modules/mail/MailController.php';
-        require_once '../modules/estudiantes/controllers/EstudiantesController.php';
-
+        // ----------------------------------------------------------
+        // 🔹 Inicialización básica
+        // ----------------------------------------------------------
         $permissionController = new PermissionController();
         $currentUserId = $_SESSION['user_id'];
-        $empresa_id = $_SESSION['empresa_id'];
+        $empresaId     = $_SESSION['empresa_id'];
 
+        // ----------------------------------------------------------
+        // 🔹 Validación de permisos
+        // ----------------------------------------------------------
         if (!$permissionController->hasPermission($currentUserId, 'create_matriculas')) {
             echo "No tienes permiso para realizar esta acción.";
             return;
         }
 
-        $programa_id = $_POST['programas'];
+        // ----------------------------------------------------------
+        // 🔹 Captura de datos
+        // ----------------------------------------------------------
 
-        $valor_matricula = $_POST['valor_matricula'];
-        $estudiante_id = $_POST['estudiante_id'];
-        $tipo_solicitud_id = $_POST['tipo_solicitud_id'];
-        $convenio_id = $_POST['convenio_id']; // Nuevo campo
-        $estado = $_POST['estado_id']; // Campo necesario
-        $observaciones = strtoupper($_POST['observaciones']); // Convertir observaciones a mayúsculas
 
-        // Obtener el número de documento del estudiante para generar el ID único
-        $query = "SELECT numero_documento FROM estudiantes WHERE id = :estudiante_id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':estudiante_id', $estudiante_id);
-        $stmt->execute();
-        $numeroDocumento = $stmt->fetchColumn();
 
+        $fecha_inscripcion = $_POST['fecha_inscripcion'] ?? null;
+        $estudiante_id     = $_POST['estudiante_id'] ?? null;
+        $valor_matricula   = $_POST['valor_matricula'] ?? 0;
+        $programa_id       = $_POST['programas'] ?? null;
+        $observaciones     = $_POST['observaciones'] ?? null;
+
+        if (empty($fecha_inscripcion) || empty($estudiante_id) || empty($programa_id)) {
+            echo "Datos incompletos.";
+            return;
+        }
+
+        // ----------------------------------------------------------
+        // 🔹 Generar ID estructurado
+        // ----------------------------------------------------------
         $id = $this->generateStructuredId();
-        $fecha_inscripcion = $_POST['fecha_inscripcion'];
 
-        // Opcionales, validar si existen antes de asignar
-        $fecha_enrolamiento = !empty($_POST['fecha_enrolamiento']) ? $_POST['fecha_enrolamiento'] : null;
-        $fecha_aprovacion_teorico = !empty($_POST['fecha_aprovacion_teorico']) ? $_POST['fecha_aprovacion_teorico'] : null;
-        $fecha_aprovacion_practico = !empty($_POST['fecha_aprovacion_practico']) ? $_POST['fecha_aprovacion_practico'] : null;
-        $fecha_certificacion = !empty($_POST['fecha_certificacion']) ? $_POST['fecha_certificacion'] : null;
+        // ----------------------------------------------------------
+        // 🔹 Estado por defecto
+        // ----------------------------------------------------------
+        $estado = 1;
 
-        // Asignar la fecha de vencimiento basada en la fecha de enrolamiento, si existe
-        $fecha_vencimiento = $fecha_enrolamiento ? date('Y-m-d', strtotime($fecha_enrolamiento . ' + 90 days')) : null;
+        try {
 
-        // Agregar `valor_matricula` en la consulta de inserción
-        $query = "
-            INSERT INTO matriculas (
-                id, 
-                fecha_inscripcion, 
-                fecha_enrolamiento, 
-                fecha_vencimiento, 
-                fecha_aprovacion_teorico, 
-                fecha_aprovacion_practico, 
-                fecha_certificacion, 
-                estudiante_id, 
-                tipo_solicitud_id, 
-                convenio_id,  
-                estado, 
-                observaciones, 
-                empresa_id, 
-                valor_matricula -- Nuevo campo
-            ) 
-            VALUES (
-                :id, 
-                :fecha_inscripcion, 
-                :fecha_enrolamiento, 
-                :fecha_vencimiento, 
-                :fecha_aprovacion_teorico, 
-                :fecha_aprovacion_practico, 
-                :fecha_certificacion, 
-                :estudiante_id, 
-                :tipo_solicitud_id, 
-                :convenio_id,  
-                :estado, 
-                :observaciones, 
-                :empresa_id, 
-                :valor_matricula -- Nuevo campo
-            )
+            // ----------------------------------------------------------
+            // 🔹 Iniciar Transacción
+            // ----------------------------------------------------------
+            $this->conn->beginTransaction();
+
+            // ----------------------------------------------------------
+            // 🔹 Insertar Matrícula
+            // ----------------------------------------------------------
+            $query = "
+                INSERT INTO matriculas (
+                    id,
+                    fecha_inscripcion,
+                    estudiante_id,
+                    estado,
+                    empresa_id,
+                    valor_matricula,
+                    observaciones
+                ) VALUES (
+                    :id,
+                    :fecha_inscripcion,
+                    :estudiante_id,
+                    :estado,
+                    :empresa_id,
+                    :valor_matricula,
+                    :observaciones
+                )
             ";
 
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':fecha_inscripcion', $fecha_inscripcion);
-        $stmt->bindParam(':fecha_enrolamiento', $fecha_enrolamiento);
-        $stmt->bindParam(':fecha_vencimiento', $fecha_vencimiento);
-        $stmt->bindParam(':fecha_aprovacion_teorico', $fecha_aprovacion_teorico);
-        $stmt->bindParam(':fecha_aprovacion_practico', $fecha_aprovacion_practico);
-        $stmt->bindParam(':fecha_certificacion', $fecha_certificacion);
-        $stmt->bindParam(':estudiante_id', $estudiante_id);
-        $stmt->bindParam(':tipo_solicitud_id', $tipo_solicitud_id);
-        $stmt->bindParam(':convenio_id', $convenio_id); // Nuevo campo
-        $stmt->bindParam(':estado', $estado);
-        $stmt->bindParam(':observaciones', $observaciones);
-        $stmt->bindParam(':empresa_id', $empresa_id);
-        $stmt->bindParam(':valor_matricula', $valor_matricula, PDO::PARAM_INT);
+            $stmt = $this->conn->prepare($query);
 
-        if ($stmt->execute()) {
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':fecha_inscripcion', $fecha_inscripcion);
+            $stmt->bindParam(':estudiante_id', $estudiante_id, PDO::PARAM_INT);
+            $stmt->bindParam(':estado', $estado, PDO::PARAM_INT);
+            $stmt->bindParam(':empresa_id', $empresaId, PDO::PARAM_INT);
+            $stmt->bindParam(':valor_matricula', $valor_matricula, PDO::PARAM_INT);
+            $stmt->bindParam(':observaciones', $observaciones, PDO::PARAM_STR);
 
-            // Insertar el programa asociado a la matrícula (solo uno)
-            if (!empty($programa_id)) { // Asegúrate de que $programa_id esté definido y no esté vacío
-                $queryPrograma = "INSERT INTO matricula_programas (matricula_id, programa_id) VALUES (:matricula_id, :programa_id)";
-                $stmtPrograma = $this->conn->prepare($queryPrograma);
-                $stmtPrograma->bindParam(':matricula_id', $id);
-                $stmtPrograma->bindParam(':programa_id', $programa_id);
-                $stmtPrograma->execute();
-            } else {
-                // Manejar el caso en el que no se proporciona un programa (opcional)
-                throw new Exception("No se ha proporcionado un programa para la matrícula.");
-            }
+            $stmt->execute();
 
-            /*
-            // Enviar el correo de confirmación 
-            $mailController = new MailController();
-            $estudiantesController = new EstudiantesController();
-            $informacionEstudiante = $estudiantesController->obtenerInformacionEstudiante($estudiante_id);
-            $nombreEstudiante = $informacionEstudiante['nombres'];
-            $nombreEstudiante .= ' ' . $informacionEstudiante['apellidos'];
-            $destinatario = $informacionEstudiante['correo'];
+            // ----------------------------------------------------------
+            // 🔹 Insertar Programa en tabla puente
+            // ----------------------------------------------------------
+            $queryPrograma = "
+                INSERT INTO matricula_programas (matricula_id, programa_id)
+                VALUES (:matricula_id, :programa_id)
+            ";
 
-            // Cargar la plantilla
-            $rutaPlantilla = '../modules/mail/views/plantilla_matricula.php';
-            $variables = [
-                'id_matricula' => $id,
-                'fecha_inscripcion' => $fecha_inscripcion,
-                'nombre_empresa' => $_SESSION['empresa_nombre']
-            ];
-            $contenidoHtml = $mailController->cargarPlantilla($rutaPlantilla, $variables);
+            $stmtPrograma = $this->conn->prepare($queryPrograma);
+            $stmtPrograma->bindParam(':matricula_id', $id);
+            $stmtPrograma->bindParam(':programa_id', $programa_id, PDO::PARAM_INT);
+            $stmtPrograma->execute();
 
-            // Enviar correo
-            $asunto = 'Confirmación de Matrícula en CeaCloud';
-
-            $mailController->sendMail($destinatario, $nombreEstudiante, $asunto, $contenidoHtml);
-            // Fin Enviar el correo de confirmación 
-            */
+            // ----------------------------------------------------------
+            // 🔹 Confirmar transacción
+            // ----------------------------------------------------------
+            $this->conn->commit();
 
             $_SESSION['matricula_creada'] = 'Matrícula creada con éxito.';
             header('Location: /matriculas/');
             exit;
+        } catch (Exception $e) {
+
+            // ----------------------------------------------------------
+            // 🔹 Rollback si falla algo
+            // ----------------------------------------------------------
+            $this->conn->rollBack();
+
+            echo "<pre>";
+            echo "ERROR: " . $e->getMessage();
+            echo "</pre>";
+            exit;
         }
     }
+
 
     private function generateStructuredId(): string
     {

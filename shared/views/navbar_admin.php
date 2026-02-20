@@ -1,6 +1,7 @@
 <?php
 $routes = include '../config/Routes.php';
 require_once '../shared/utils/enlaces.php';
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 ?>
 
 <li class="pc-item">
@@ -18,7 +19,7 @@ require_once '../shared/utils/enlaces.php';
         <span class="pc-micon">
             <i class="ph-duotone ph-subtitles"></i>
         </span>
-        <span class="pc-mtext">Matrículas</span>
+        <span class="pc-mtext"><?= LabelHelper::get('menu_matriculas') ?></span>
         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
     </a>
     <ul class="pc-submenu">
@@ -28,8 +29,9 @@ require_once '../shared/utils/enlaces.php';
 </li>
 
 <?php /** ESTUDIANTES */ ?>
+
 <li class="pc-item pc-hasmenu">
-    <a href="#!" class="pc-link">
+    <a  class="pc-link">
         <span class="pc-micon">
             <i class="ph-duotone ph-student"></i>
         </span>
@@ -63,21 +65,20 @@ require_once '../shared/utils/enlaces.php';
         <span class="pc-micon">
             <i class="ph-duotone ph-projector-screen-chart"></i>
         </span>
-        <span class="pc-mtext">Clases Teóricas</span>
+        <span class="pc-mtext">Clases</span>
         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
     </a>
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="/clases_teoricas/">Listado</a></li>
         <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_calendariodos']; ?>">Calendario</a></li>
-        <!--<li class="pc-item"><a class="pc-link" href="/clasesteoricascreate/">Crear</a></li>-->
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_informe_general']; ?>">Informe General</a></li>
+        <!-- <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_informe_general']; ?>">Informe General</a></li> -->
         <li class="pc-item"><a class="pc-link" href="<?= $routes['aulas_index']; ?>">Aulas</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_no_asistidas']; ?>">Control</a></li>
-        <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_creacion_multiple_form']; ?>">Cargue Masivo</a></li>
+        <!-- <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_no_asistidas']; ?>">Control</a></li> -->
+        <li class="pc-item"><a class="pc-link" href="<?= $routes['clases_teoricas_creacion_multiple_form']; ?>">Cargue</a></li>
     </ul>
 </li>
 
-<?php /** CLASES PRACTICAS */ ?>
+<!-- <?php /** CLASES PRACTICAS */ ?>
 <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
         <span class="pc-micon">
@@ -91,28 +92,7 @@ require_once '../shared/utils/enlaces.php';
         <li class="pc-item"><a class="pc-link" href="<?= $routes['calificaciones_index'] ?>">Calificaciones</a></li>
         <li class="pc-item"><a class="pc-link" href="<?= $routes['novedades_index'] ?>">Novedades</a></li>
     </ul>
-</li>
-
-
-<li class="pc-item">
-    <a href="/users/" class="pc-link">
-        <span class="pc-micon">
-            <i class="ph-duotone ph-users"></i>
-        </span>
-        <span class="pc-mtext">Usuarios</span>
-    </a>
-</li>
-
-
-
-<li class="pc-item">
-    <a href="/convenios/" class="pc-link">
-        <span class="pc-micon">
-            <i class="ph-duotone ph-handshake"></i>
-        </span>
-        <span class="pc-mtext">Convenios</span>
-    </a>
-</li>
+</li> -->
 
 <li class="pc-item">
     <a href="/administrativos/" class="pc-link">
@@ -123,9 +103,7 @@ require_once '../shared/utils/enlaces.php';
     </a>
 </li>
 
-
 <?php /* INGRESOS */ ?>
-
 <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
         <span class="pc-micon">
@@ -158,7 +136,11 @@ require_once '../shared/utils/enlaces.php';
 </li>
 
 
+
 <?php /* CAJA */ ?>
+
+
+
 
 <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
@@ -187,9 +169,12 @@ require_once '../shared/utils/enlaces.php';
 </li>
 
 
+
+
+
 <?php /* INSPECCIONES */ ?>
 
-<li class="pc-item pc-hasmenu">
+<!-- <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
         <span class="pc-micon">
             <i class="ph-duotone ph-clipboard-text"></i>
@@ -202,12 +187,12 @@ require_once '../shared/utils/enlaces.php';
         <li class="pc-item"><a class="pc-link" href="<?php echo $routes['inspecciones_vehiculos_index']; ?>">Inspecciones Automóviles</a></li>
         <li class="pc-item"><a class="pc-link" href="<?php echo $routes['inspecciones_motos_index']; ?>">Inspecciones Motos</a></li>
     </ul>
-</li>
+</li> -->
 
 
 <?php /* INFORMES */ ?>
 
-<li class="pc-item pc-hasmenu">
+<!-- <li class="pc-item pc-hasmenu">
     <a href="#!" class="pc-link">
         <span class="pc-micon">
             <i class="ph-duotone ph-file-text"></i>
@@ -218,7 +203,7 @@ require_once '../shared/utils/enlaces.php';
     <ul class="pc-submenu">
         <li class="pc-item"><a class="pc-link" href="<?php echo $routes['informe_siet_index']; ?>">SIET</a></li>
     </ul>
-</li>
+</li> -->
 
 
 <?php /* CONFIGURACION */ ?>

@@ -4,6 +4,7 @@ require_once '../config/DatabaseConfig.php';
 require_once '../modules/permissions/controllers/PermissionController.php';
 require_once '../shared/utils/ImageHelper.php';
 require_once '../shared/utils/TablasParametricasUtils.php';
+require_once '../shared/utils/LabelHelper.php';
 
 class AdministrativosController
 {
